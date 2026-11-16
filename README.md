@@ -88,7 +88,6 @@ aggregates, `GROUP BY` / `HAVING`, subqueries, correlated subqueries, `EXISTS` /
 │   └── test_app.py             # 56 automated test cases
 ├── docs/                       # requirements, ER design, normalization, testing notes
 ├── results/                    # saved outputs of the tests and queries
-├── report/                     # LaTeX project report (main.tex, chapters/, figures/)
 ├── .env.example                # template for database settings
 └── requirements.txt
 ```

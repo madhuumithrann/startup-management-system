@@ -33,3 +33,6 @@ __pycache__/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# ---- LaTeX project report (kept locally, not published) ----
+report/
