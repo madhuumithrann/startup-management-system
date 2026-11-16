@@ -1,0 +1,116 @@
+% =====================================================================
+% Chapter 1: Introduction
+% =====================================================================
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Background}
+A startup incubation centre supports early-stage companies for a fixed period. A typical
+centre carries out the following activities:
+\begin{enumerate}
+  \item keeping records of registered startups and their founders;
+  \item receiving applications for its incubation programme;
+  \item having expert evaluators score each application;
+  \item admitting the best applicants into incubation;
+  \item assigning mentors to admitted startups; and
+  \item tracking each admitted startup's progress through milestones.
+\end{enumerate}
+Each activity produces data that depends on the data of earlier activities: an evaluation
+belongs to an application, an incubation is created from an accepted application, and
+mentors and milestones belong to an incubation. This chain of dependent data makes the domain
+a good fit for a relational database.
+
+\section{Problem Statement}
+\label{sec:problem}
+Small incubation centres frequently manage this process with spreadsheets, e-mail threads and
+paper forms. This causes four concrete problems:
+\begin{itemize}
+  \item \textbf{Redundancy and update anomalies.} A startup's details are re-typed in several
+        sheets (applications, evaluations, mentoring). When one copy is changed, the others
+        become inconsistent.
+  \item \textbf{No enforcement of business rules.} Nothing prevents a mentor from being
+        ``assigned'' to a startup that was never admitted, or a score of 150 out of 100 being
+        recorded.
+  \item \textbf{Broken references.} An evaluation can refer to an application that has been
+        deleted or never existed.
+  \item \textbf{Slow reporting.} Questions such as ``What is the average score of each
+        applicant?'' or ``Which mentor guides the most startups?'' must be answered by manual
+        counting.
+\end{itemize}
+
+\section{Need for the System}
+A relational database with an application on top of it addresses each of these problems:
+\begin{itemize}
+  \item \textbf{Single source of truth:} each fact is stored once, in a normalized schema.
+  \item \textbf{Integrity enforced by the database itself:} primary keys, foreign keys,
+        \code{NOT NULL}, \code{UNIQUE} and \code{CHECK} constraints reject invalid data even if
+        the user interface has a defect.
+  \item \textbf{Consistent multi-step operations:} transactions guarantee that, for example,
+        accepting an application and creating its incubation record either both happen or
+        neither happens.
+  \item \textbf{Instant reports:} joins, aggregate functions and subqueries answer management
+        questions directly from the stored data.
+\end{itemize}
+
+\section{Objectives}
+\label{sec:objectives}
+The objectives of the project are:
+\begin{enumerate}
+  \item To design a normalized relational database (at least 3NF) for the incubation process.
+  \item To enforce data integrity using appropriate database constraints.
+  \item To provide a working user interface through which users perform \code{INSERT},
+        \code{UPDATE}, \code{DELETE} and \code{SELECT} operations in every module.
+  \item To implement the application life cycle: submission $\rightarrow$ evaluation
+        $\rightarrow$ decision $\rightarrow$ incubation.
+  \item To support mentor assignment and milestone-based progress tracking for incubated
+        startups.
+  \item To generate meaningful reports using joins, aggregates, \code{GROUP BY}/\code{HAVING},
+        subqueries and views.
+  \item To demonstrate transactions for multi-step operations.
+\end{enumerate}
+
+\section{Scope of the Project}
+\label{sec:scope}
+\textbf{In scope.} Five functional modules (Startup, Application, Evaluation, Mentor and
+Progress Management), the reports listed in Section~\ref{sec:reports}, the constraints implied
+by the business rules, a role-based user interface, a locally hosted PostgreSQL database and
+realistic sample data (10 startups, 18 founders, 10 applications, 20 evaluations, 5 evaluators,
+6 mentors, 5 incubations and 15 milestones).
+
+\textbf{Out of scope.} The following were deliberately excluded to keep the project focused on
+database design and implementation: user login and authentication; payments, funding rounds
+and investor portals; notifications, e-mail and chat; AI-based recommendations; multiple
+incubation centres; resource or office-space allocation; file uploads; and cloud deployment.
+
+\section{Users of the System}
+\label{sec:users}
+The application offers a separate set of screens (tabs) for each of four roles,
+summarised in Table~\ref{tab:users}.
+
+\begin{table}[H]
+  \centering
+  \caption{Users of the system and what each role can do}
+  \label{tab:users}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    \textbf{Role} & \textbf{Capabilities} \\
+    \midrule
+    Administrator      & Register and maintain startups and founders; maintain evaluators and
+                         mentors; change application status; admit startups to incubation;
+                         assign mentors; create milestones; view all reports. \\
+    Startup / Founder  & View and update its own startup; submit applications; track
+                         application status and read evaluator feedback; view its milestones
+                         and progress. \\
+    Evaluator          & See the applications under review that he or she has not yet
+                         evaluated; record a score and feedback; view past evaluations. \\
+    Mentor             & See the startups he or she mentors; add mentorship remarks; update
+                         the milestone status of those startups only. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The role is chosen from a ``View as'' selector in the sidebar, after which the user selects
+which startup, evaluator or mentor he or she is. Every query on those screens is then filtered
+by the selected identifier (for example \code{WHERE evaluator\_id = \%s}). This is a user
+interface feature that shows different users different parts of the same database; it is
+\emph{not} an authentication mechanism, which is outside the scope of the project.

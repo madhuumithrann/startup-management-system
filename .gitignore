@@ -1,0 +1,35 @@
+# ---- Secrets: database password lives here (see .env.example) ----
+.env
+.env.*
+!.env.example
+
+# ---- Python virtual environment and caches ----
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# ---- Streamlit local secrets ----
+.streamlit/secrets.toml
+
+# ---- LaTeX build files (keep .tex sources and the final main.pdf) ----
+*.aux
+*.log
+*.lof
+*.lot
+*.lol
+*.toc
+*.out
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# ---- Editor / OS / tool files ----
+.claude/
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

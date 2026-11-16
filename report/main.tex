@@ -1,0 +1,165 @@
+% =====================================================================
+% main.tex  -  Project report: Startup Incubation and Startup Management System
+% Compile from the report/ folder:   pdflatex main.tex   (run it twice)
+% =====================================================================
+\documentclass[12pt,a4paper]{report}
+
+% ---------- Page layout and fonts ----------
+\usepackage[a4paper,margin=2.5cm]{geometry}   % margins
+\usepackage[T1]{fontenc}                       % proper output of accented chars, underscores
+\usepackage{lmodern}                           % clean, scalable font
+\usepackage{microtype}                         % finer spacing -> fewer lines sticking into the margin
+\setlength{\emergencystretch}{2em}             % allow a little extra word spacing when needed
+\usepackage{setspace}                          % line spacing
+\onehalfspacing
+
+% ---------- Tables, figures, colours ----------
+\usepackage{graphicx}                          % \includegraphics for screenshots
+\usepackage{booktabs}                          % professional table rules
+\usepackage{tabularx}                          % tables that fill the text width
+\usepackage{longtable}                         % tables that can break across pages
+\usepackage{array}
+\usepackage{float}                             % [H] placement option
+\usepackage[font=small,labelfont=bf]{caption}  % caption style
+\usepackage[table]{xcolor}                     % colours (also for table rows)
+\usepackage{enumitem}                          % compact lists
+\setlist{itemsep=2pt,topsep=4pt}
+
+% ---------- Diagrams ----------
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+
+% ---------- Code listings (SQL and Python) ----------
+\usepackage{listings}
+\definecolor{codebg}{RGB}{247,247,247}
+\definecolor{codekw}{RGB}{0,70,160}
+\definecolor{codecomment}{RGB}{0,120,60}
+\definecolor{codestring}{RGB}{160,40,40}
+\lstdefinestyle{base}{
+  basicstyle=\ttfamily\footnotesize,
+  backgroundcolor=\color{codebg},
+  keywordstyle=\color{codekw}\bfseries,
+  commentstyle=\color{codecomment}\itshape,
+  stringstyle=\color{codestring},
+  frame=single, rulecolor=\color{gray!50},
+  breaklines=true, columns=fullflexible, keepspaces=true,
+  showstringspaces=false, tabsize=4,
+  numbers=left, numberstyle=\tiny\color{gray}, numbersep=6pt,
+  xleftmargin=1.5em, framexleftmargin=1.5em,
+  captionpos=b, aboveskip=8pt, belowskip=8pt
+}
+\lstdefinestyle{sql}{style=base, language=SQL, morekeywords={REFERENCES,RETURNING,ILIKE,
+  CASCADE,RESTRICT,GENERATED,ALWAYS,IDENTITY,VIEW,REPLACE,EXISTS,NULLIF,COALESCE,
+  STRING_AGG,TRUNCATE,BEGIN,COMMIT,ROLLBACK,ANY,FILTER,INDEX,CONSTRAINT,CHECK,UNIQUE,
+  BETWEEN,FOR,LEFT,INNER,JOIN,HAVING,CASE,WHEN,THEN,ELSE,END}}
+\lstdefinestyle{py}{style=base, language=Python}
+\renewcommand{\lstlistingname}{Listing}
+
+% ---------- Header and footer ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\nouppercase{\leftmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\headheight}{15pt}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% ---------- Short commands used in the text ----------
+\newcommand{\code}[1]{\texttt{#1}}             % inline code / table names
+
+% ---------- Hyperlinks (load last) ----------
+\usepackage[hidelinks]{hyperref}
+
+% =====================================================================
+% FILL IN YOUR DETAILS HERE
+% =====================================================================
+% Separate several names with \\ .  Do NOT start a name with "[" right after \\ ,
+% because LaTeX reads \\[...] as "line break + extra space" and stops with an error.
+\newcommand{\studentnames}{Student Name 1 \\ Student Name 2}
+\newcommand{\rollnumbers}{Roll No. 1 \\ Roll No. 2}
+\newcommand{\coursename}{Database Systems (DBS)}
+\newcommand{\instructor}{[Name of Course Instructor]}
+\newcommand{\department}{[Department Name]}
+\newcommand{\institution}{[Institution Name]}
+\newcommand{\submissiondate}{[Month Year]}
+
+\begin{document}
+
+% =====================================================================
+% Title page
+% =====================================================================
+\begin{titlepage}
+  \centering
+  \vspace*{1cm}
+  {\large \institution \par}
+  {\large \department \par}
+  \vspace{1.5cm}
+  {\large Course Project Report \par}
+  {\large \coursename \par}
+  \vspace{1.5cm}
+  \rule{\textwidth}{1pt}\par\vspace{0.4cm}
+  {\LARGE\bfseries Startup Incubation and\\[4pt] Startup Management System \par}
+  \vspace{0.3cm}
+  {\large A database-driven application using Python, PostgreSQL and Streamlit \par}
+  \vspace{0.4cm}\rule{\textwidth}{1pt}
+  \vfill
+  \begin{tabular}{ll}
+    \textbf{Submitted by:} & \begin{tabular}[t]{@{}l@{}}\studentnames\end{tabular} \\[1.2em]
+    \textbf{Roll number:}  & \begin{tabular}[t]{@{}l@{}}\rollnumbers\end{tabular} \\[1.2em]
+    \textbf{Submitted to:} & \instructor \\[1.2em]
+  \end{tabular}
+  \vfill
+  {\large \submissiondate \par}
+\end{titlepage}
+
+% =====================================================================
+% Front matter: abstract and tables of contents (roman page numbers)
+% =====================================================================
+\pagenumbering{roman}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+Startup incubation centres admit early-stage startups into a support programme, evaluate
+their applications, assign mentors and track their progress. When this work is done with
+spreadsheets and e-mail, the same data is stored in many places, rules such as ``only admitted
+startups receive mentors'' are not enforced, and simple management questions require manual
+counting.
+
+This project designs and implements a database-driven application that solves these problems.
+The database, implemented in PostgreSQL, consists of nine relations---\code{startup},
+\code{founder}, \code{application}, \code{evaluator}, \code{evaluation}, \code{incubation},
+\code{mentor}, \code{mentorship} and \code{milestone}---derived from an ER model and shown to be
+in Boyce--Codd Normal Form (and therefore in 3NF). Integrity is enforced inside the database by
+primary keys, foreign keys with deliberate \code{ON DELETE} rules, \code{NOT NULL},
+\code{UNIQUE} and \code{CHECK} constraints, and a partial unique index. Multi-step operations,
+such as admitting a startup into incubation, are executed as transactions.
+
+The application, written in Python with Streamlit and psycopg, provides five functional
+modules---Startup, Application, Evaluation, Mentor and Progress Management---and separate views
+for four user roles: Administrator, Startup/Founder, Evaluator and Mentor. It uses 21 SQL queries
+and two views covering joins, aggregates, \code{GROUP BY}/\code{HAVING}, subqueries, correlated
+subqueries and \code{EXISTS}. An automated test suite of 56 test cases and a database constraint
+test script were executed, and all tests passed.
+
+\tableofcontents
+\listoffigures
+\listoftables
+\lstlistoflistings
+
+% =====================================================================
+% Main chapters (arabic page numbers)
+% =====================================================================
+\clearpage
+\pagenumbering{arabic}
+
+\input{chapters/01_introduction}
+\input{chapters/02_requirements}
+% Added in the next steps:
+% \input{chapters/03_database_design}
+% \input{chapters/04_normalization}
+% \input{chapters/05_implementation}
+% \input{chapters/06_testing}
+% \input{chapters/07_conclusion}
+
+\end{document}

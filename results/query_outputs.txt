@@ -1,0 +1,218 @@
+﻿
+=== Q1  Startups in one sector, sorted by name   [FR-1.3]  WHERE, ORDER BY
+ startup_id |  startup_name  |  city  | founded_date 
+------------+----------------+--------+--------------
+          8 | AquaSense      | Nagpur | 2025-01-12
+          1 | GreenLeaf Agro | Pune   | 2024-06-15
+(2 rows)
+
+
+=== Q2  Search startups by part of the name or city   [FR-1.3]  ILIKE, OR
+ startup_id | startup_name |   sector   | city  
+------------+--------------+------------+-------
+          9 | CareConnect  | HealthTech | Kochi
+(1 row)
+
+
+=== Q3  Full details of one startup with its founders   [FR-1.4]  INNER JOIN
+ startup_name | sector |   city    |     founder     | designation |         email         
+--------------+--------+-----------+-----------------+-------------+-----------------------
+ CloudLedger  | SaaS   | Bengaluru | Deepak Menon    | CEO         | deepak@cloudledger.in
+ CloudLedger  | SaaS   | Bengaluru | Ritu Verma      | CTO         | ritu@cloudledger.in
+ CloudLedger  | SaaS   | Bengaluru | Aditya Kulkarni | CFO         | aditya@cloudledger.in
+(3 rows)
+
+
+=== Q4  Open applications, oldest first   [FR-2.2, FR-2.3]  JOIN, IN, ORDER BY
+ application_id |    startup_name    | submitted_on |    status    | funding_requested 
+----------------+--------------------+--------------+--------------+-------------------
+              8 | VidyaPath Learning | 2026-09-15   | Under Review |        1800000.00
+              9 | AquaSense          | 2026-09-20   | Under Review |        3500000.00
+             10 | CareConnect        | 2026-10-25   | Submitted    |        2200000.00
+(3 rows)
+
+
+=== Q5  Number of startups in each sector   [R1]  COUNT, GROUP BY
+   sector   | number_of_startups 
+------------+--------------------
+ AgriTech   |                  2
+ EdTech     |                  2
+ HealthTech |                  2
+ CleanTech  |                  1
+ E-Commerce |                  1
+ FinTech    |                  1
+ SaaS       |                  1
+(7 rows)
+
+
+=== Q6  Applications and funding requested by status   [R2]  COUNT, SUM, AVG, GROUP BY
+    status    | applications | total_funding_requested | avg_funding_requested 
+--------------+--------------+-------------------------+-----------------------
+ Accepted     |            5 |             13000000.00 |            2600000.00
+ Rejected     |            2 |              2000000.00 |            1000000.00
+ Under Review |            2 |              5300000.00 |            2650000.00
+ Submitted    |            1 |              2200000.00 |            2200000.00
+(4 rows)
+
+
+=== Q7  Evaluation summary per application   [R3, FR-3.4]  3-table JOIN, COUNT/AVG/MIN/MAX
+ application_id |    startup_name    |    status    | evaluators | avg_score | lowest | highest 
+----------------+--------------------+--------------+------------+-----------+--------+---------
+              7 | CloudLedger        | Accepted     |          2 |      88.5 |     86 |      91
+              1 | GreenLeaf Agro     | Accepted     |          3 |      84.0 |     80 |      88
+              2 | MediQuick Health   | Accepted     |          3 |      83.3 |     78 |      90
+              3 | PaySetu            | Accepted     |          2 |      82.0 |     79 |      85
+              9 | AquaSense          | Under Review |          2 |      77.5 |     74 |      81
+              5 | SolarNest Energy   | Accepted     |          3 |      76.0 |     72 |      80
+              8 | VidyaPath Learning | Under Review |          1 |      70.0 |     70 |      70
+              4 | VidyaPath Learning | Rejected     |          2 |      51.5 |     48 |      55
+              6 | KiranaKart         | Rejected     |          2 |      48.5 |     45 |      52
+(9 rows)
+
+
+=== Q8  Strong applications: average score of at least 80   [R3]  GROUP BY + HAVING
+ application_id |   startup_name   | avg_score 
+----------------+------------------+-----------
+              7 | CloudLedger      |      88.5
+              1 | GreenLeaf Agro   |      84.0
+              2 | MediQuick Health |      83.3
+              3 | PaySetu          |      82.0
+(4 rows)
+
+
+=== Q9  Evaluators who have done at least 3 evaluations   [FR-3.1]  JOIN, GROUP BY, HAVING COUNT
+ evaluator_id |   full_name    | expertise_area | evaluations_done | avg_score_given 
+--------------+----------------+----------------+------------------+-----------------
+            4 | Rahul Bhatia   | Technology     |                7 |            77.9
+            2 | Lakshmi Rao    | Finance        |                6 |            74.3
+            5 | Shalini Gupta  | Marketing      |                3 |            56.7
+            1 | Dr. Anil Mehta | AgriTech       |                3 |            81.7
+(4 rows)
+
+
+=== Q10 ALL applications with their evaluation count (incl. zero)   [FR-2.2, FR-3.4]  LEFT JOIN
+ application_id |    startup_name    |    status    | evaluations | avg_score 
+----------------+--------------------+--------------+-------------+-----------
+              1 | GreenLeaf Agro     | Accepted     |           3 |      84.0
+              2 | MediQuick Health   | Accepted     |           3 |      83.3
+              3 | PaySetu            | Accepted     |           2 |      82.0
+              4 | VidyaPath Learning | Rejected     |           2 |      51.5
+              5 | SolarNest Energy   | Accepted     |           3 |      76.0
+              6 | KiranaKart         | Rejected     |           2 |      48.5
+              7 | CloudLedger        | Accepted     |           2 |      88.5
+              8 | VidyaPath Learning | Under Review |           1 |      70.0
+              9 | AquaSense          | Under Review |           2 |      77.5
+             10 | CareConnect        | Submitted    |           0 |          
+(10 rows)
+
+
+=== Q11 Applications not evaluated by anyone yet   [R5]  LEFT JOIN ... IS NULL
+ application_id | startup_name |  status   | submitted_on 
+----------------+--------------+-----------+--------------
+             10 | CareConnect  | Submitted | 2026-10-25
+(1 row)
+
+
+=== Q12 Active incubations with NO active mentor   [R7, FR-4.2]  LEFT JOIN with condition in ON
+ incubation_id |   startup_name   |  sector   | start_date 
+---------------+------------------+-----------+------------
+             4 | SolarNest Energy | CleanTech | 2026-04-01
+(1 row)
+
+
+=== Q13 Mentor workload: active startups per mentor (incl. zero)   [R6, FR-4.3]  LEFT JOIN + COUNT
+ mentor_id |   full_name    |   expertise_area    | active_startups 
+-----------+----------------+---------------------+-----------------
+         1 | Rohan Desai    | Product Development |               2
+         2 | Dr. Priya Nair | Healthcare          |               1
+         4 | Meera Joshi    | Agri Supply Chain   |               1
+         5 | Arjun Malhotra | SaaS Sales          |               0
+         6 | Kavita Rao     | Marketing           |               0
+         3 | Sanjay Gupta   | Finance             |               0
+(6 rows)
+
+
+=== Q14 Applications scoring above the overall average score   [R4]  subquery in HAVING
+ application_id |   startup_name   |    status    | avg_score 
+----------------+------------------+--------------+-----------
+              7 | CloudLedger      | Accepted     |      88.5
+              1 | GreenLeaf Agro   | Accepted     |      84.0
+              2 | MediQuick Health | Accepted     |      83.3
+              3 | PaySetu          | Accepted     |      82.0
+              9 | AquaSense        | Under Review |      77.5
+              5 | SolarNest Energy | Accepted     |      76.0
+(6 rows)
+
+
+=== Q15 Highest-scoring evaluation of each application   [R10]  CORRELATED subquery
+ application_id |    startup_name    |    top_evaluator    | top_score 
+----------------+--------------------+---------------------+-----------
+              1 | GreenLeaf Agro     | Dr. Anil Mehta      |        88
+              2 | MediQuick Health   | Dr. Farhan Siddiqui |        90
+              3 | PaySetu            | Lakshmi Rao         |        85
+              4 | VidyaPath Learning | Rahul Bhatia        |        55
+              5 | SolarNest Energy   | Rahul Bhatia        |        80
+              6 | KiranaKart         | Shalini Gupta       |        52
+              7 | CloudLedger        | Rahul Bhatia        |        91
+              8 | VidyaPath Learning | Shalini Gupta       |        70
+              9 | AquaSense          | Dr. Anil Mehta      |        81
+(9 rows)
+
+
+=== Q16 Evaluator view: Under Review applications evaluator 5 has NOT scored yet   [FR-3.2, D5]  NOT EXISTS
+ application_id | startup_name | submitted_on | funding_requested 
+----------------+--------------+--------------+-------------------
+              9 | AquaSense    | 2026-09-20   |        3500000.00
+(1 row)
+
+
+=== Q17 Progress of each incubated startup   [R8, FR-5.4]  CASE inside SUM, percentage
+ incubation_id |   startup_name   |  status   | total_milestones | completed | percent_complete 
+---------------+------------------+-----------+------------------+-----------+------------------
+             5 | CloudLedger      | Graduated |                3 |         3 |            100.0
+             1 | GreenLeaf Agro   | Active    |                4 |         2 |             50.0
+             3 | PaySetu          | Exited    |                2 |         1 |             50.0
+             2 | MediQuick Health | Active    |                3 |         1 |             33.3
+             4 | SolarNest Energy | Active    |                3 |         1 |             33.3
+(5 rows)
+
+
+=== Q18 Overdue milestones of active incubations   [R9, FR-5.5]  date arithmetic, 4-table JOIN
+   startup_name   |           title            | target_date |   status    | days_overdue 
+------------------+----------------------------+-------------+-------------+--------------
+ MediQuick Health | Partner with 10 clinics    | 2026-10-15  | In Progress |           22
+ SolarNest Energy | Reach 100 subscribed homes | 2026-11-01  | In Progress |            5
+(2 rows)
+
+
+=== Q19 Startups that have never been accepted   [FR-1.3]  subquery with NOT IN
+ startup_id |    startup_name    |   sector   
+------------+--------------------+------------
+          8 | AquaSense          | AgriTech
+         10 | ByteTutor          | EdTech
+          9 | CareConnect        | HealthTech
+          6 | KiranaKart         | E-Commerce
+          4 | VidyaPath Learning | EdTech
+(5 rows)
+
+CREATE VIEW
+CREATE VIEW
+
+=== Q20 Applications of one startup (Startup role view)   [FR-2.3]  SELECT from a VIEW
+ application_id | submitted_on |    status    | evaluation_count | avg_score 
+----------------+--------------+--------------+------------------+-----------
+              4 | 2026-01-18   | Rejected     |                2 |      51.5
+              8 | 2026-09-15   | Under Review |                1 |      70.0
+(2 rows)
+
+
+=== Q21 Incubation dashboard with progress percentage   [R11]  SELECT from a VIEW
+ incubation_id |   startup_name   |  status   |       active_mentors        | progress | percent_complete 
+---------------+------------------+-----------+-----------------------------+----------+------------------
+             1 | GreenLeaf Agro   | Active    | Meera Joshi, Rohan Desai    | 2 / 4    |             50.0
+             2 | MediQuick Health | Active    | Dr. Priya Nair, Rohan Desai | 1 / 3    |             33.3
+             3 | PaySetu          | Exited    |                             | 1 / 2    |             50.0
+             4 | SolarNest Energy | Active    |                             | 1 / 3    |             33.3
+             5 | CloudLedger      | Graduated |                             | 3 / 3    |            100.0
+(5 rows)
+
